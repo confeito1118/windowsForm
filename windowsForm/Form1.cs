@@ -1,13 +1,44 @@
-using Spire.Xls;
+using System;
 using System.IO;
+using System.Web;
+
+// NuGet Excel
+using Spire.Xls;
+// NuGet HTML
+using HtmlAgilityPack;
 
 namespace windowsForm
 {
     public partial class Form1 : Form
     {
+        public const int SOFT_VERSION = 101;
+        public bool SOFT_VERSION_FLAG = false;
+
         public Form1()
         {
             InitializeComponent();
+            versionCheck();
+        }
+        public void versionCheck()
+        {
+            // ぺーでーえふぺいの最新バージョン情報の確認
+            HtmlWeb web = new HtmlWeb();
+            var htmlDoc = web.Load("https://npo-yudu.jp/pei/pdfpei.html");
+            // var node = htmlDoc.DocumentNode.SelectSingleNode("//head/title");
+            var node = htmlDoc.DocumentNode.SelectSingleNode("//head/version");
+            // HTMLタグ付き <title>Yahoo</title>
+            // MessageBox.Show("Node Name: " + node.Name + "\n" + node.OuterHtml);
+            // HTMLタグ無し Yahoo
+            // MessageBox.Show("Node Name: " + node.Name + "\n" + node.InnerText);
+            int test = Int32.Parse(node.InnerText);
+            if (test == SOFT_VERSION)
+            {
+                MessageBox.Show("ご利用のバージョンは最新版です");
+            } else
+            {
+                MessageBox.Show("ご利用のバージョンは最新版ではありません。\n最新版をダウンロードしてください");
+                this.Close();
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -20,7 +51,9 @@ namespace windowsForm
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Hand
                 );
-            } else {
+            }
+            else
+            {
                 // ディレクトリ名
                 var dirName = Path.GetDirectoryName(file_n.Text);
                 // ファイル名（拡張子無し）
@@ -38,14 +71,20 @@ namespace windowsForm
                 //サンプルExcel文書をロードする
                 workbook.LoadFromFile(dirName + "\\" + fileName + extensionName);
 
+                // Excelのシート数を取得
+                int sheetCnt = workbook.Worksheets.Count;
+                // MessageBox.Show(Convert.ToString(sheetCnt)); // シート数の表示
+
                 //変換時にページに合うようにワークシートを設定する
                 workbook.ConverterSetting.SheetFitToPage = true;
 
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < sheetCnt; i++)
                 {
                     //最初のワークシートを取得する
                     Worksheet worksheet = workbook.Worksheets[i];
                     var sheetName = worksheet.Name;
+
+                    // MessageBox.Show(sheetName);
 
                     if (String.IsNullOrEmpty(sheetName))
                     {
@@ -55,11 +94,12 @@ namespace windowsForm
                         //PDFに保存する
                         worksheet.SaveToPdf(dirName + "\\" + fileName + "_" + sheetName + ".pdf");
                     }
+
                 }
 
                 MessageBox.Show(
-                    "終了",
-                    "無事",
+                    Convert.ToString(sheetCnt) + "枚分のシートをPDFに変換しました",
+                    "処理終了",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Asterisk
                 );
