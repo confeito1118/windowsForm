@@ -11,7 +11,7 @@ namespace windowsForm
 {
     public partial class Form1 : Form
     {
-        public const int SOFT_VERSION = 120;
+        public const int SOFT_VERSION = 121;
         public bool SOFT_VERSION_FLAG = false;
 
         public Form1()
@@ -137,7 +137,7 @@ namespace windowsForm
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 openFileDialog.Title = "ファイル選択ダイアログ";
-                openFileDialog.Filter = "エクセルファイル(*.xlsm)|*.xlsm|すべてのファイル(*.*)|*.*";
+                openFileDialog.Filter = "エクセルファイル(*.xlsm)|*.xlsm|エクセルファイル(*.xlsx)|*.xlsx|すべてのファイル(*.*)|*.*";
                 openFileDialog.InitialDirectory = @"c:\Study\";
 
                 // ファイル選択ダイアログを開く
